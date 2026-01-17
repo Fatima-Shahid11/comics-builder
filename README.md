@@ -9,12 +9,7 @@
 - [Features](#features)
 - [Demo](#demo)
 - [Installation](#installation)
-- [Usage](#usage)
-- [Project Structure](#project-structure)
-- [Technologies](#technologies)
-- [Environment Variables](#environment-variables)
-- [Contributing](#contributing)
-- [License](#license)
+- [Project Description](#project-description)
 
 ---
 
@@ -37,13 +32,25 @@ Once the app is running:
 3. Click **Generate**  
 4. The AI will produce comic scripts page by page  
 
-*(Screenshots or GIFs can be added here to visualize the workflow.)*
-
 ---
 
 ## Installation
 
 1. **Clone the repository**
+**🔗 [https://github.com/your-username/comics-builder](https://github.com/Fatima-shahid11/comics-builder)**
 
-```bash
-git clone git@github.com:Fatima-Shahid11/comics-builder.git
+2. **Environment Variables**
+  Create a `.env` file at the root of the project with the following variables:
+  COMIC_BUILDER_API_KEY=your_groq_api_key_here
+
+---
+
+## Project Description
+
+- **`pages/`**: Contains all Next.js pages. Each file represents a route in the app.  
+- **`components/`**: Reusable React components used throughout the app.  
+- **`public/`**: Static files such as images, icons, or fonts. Accessible publicly.  
+- **`styles/`**: CSS files or Tailwind configurations for styling components.  
+- **`.env`**: Environment variables for API keys or configurations (not committed to Git).  
+- **`package.json`**: Lists dependencies, scripts, and project metadata.  
+- **`README.md`**: This documentation file.
