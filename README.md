@@ -37,7 +37,7 @@ Once the app is running:
 ## Installation
 
 1. **Clone the repository**
-**🔗 [https://github.com/your-username/comics-builder](https://github.com/Fatima-shahid11/comics-builder)**
+**🔗 [https://github.com/Fatima-Shahid11/comics-builder](https://github.com/Fatima-shahid11/comics-builder)**
 
 2. **Environment Variables**
   Create a `.env` file at the root of the project with the following variables:
