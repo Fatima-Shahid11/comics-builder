@@ -1,66 +1,150 @@
-import Image from "next/image";
-import styles from "./page.module.css";
+'use client';
+
+import { useState } from 'react';
+import { FaBookOpen, FaMagic, FaTruckLoading } from 'react-icons/fa';
+import styles from './home.module.css';
 
 export default function Home() {
+  const [prompt, setPrompt] = useState('');
+  const [pages, setPages] = useState(3);
+  const [comic, setComic] = useState(null);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState('');
+
+  const generateComic = async () => {
+    if (!prompt.trim()) {
+      setError('Please enter a story prompt');
+      return;
+    }
+
+    setLoading(true);
+    setError('');
+    setComic(null);
+
+    try {
+      const response = await fetch('/api/generate-comic', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ prompt, pages }),
+      });
+
+      const data = await response.json();
+
+      if (data.success) {
+        setComic(data.comic);
+      } else {
+        setError(data.error || 'Failed to generate comic');
+      }
+    } catch (err) {
+      setError('Network error. Please try again.');
+    } finally {
+      setLoading(false);
+    }
+  };
+
   return (
-    <div className={styles.page}>
-      <main className={styles.main}>
-        <Image
-          className={styles.logo}
-          src="/next.svg"
-          alt="Next.js logo"
-          width={100}
-          height={20}
-          priority
-        />
-        <div className={styles.intro}>
-          <h1>To get started, edit the page.js file.</h1>
-          <p>
-            Looking for a starting point or more instructions? Head over to{" "}
-            <a
-              href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              target="_blank"
-              rel="noopener noreferrer"
-            >
-              Templates
-            </a>{" "}
-            or the{" "}
-            <a
-              href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              target="_blank"
-              rel="noopener noreferrer"
-            >
-              Learning
-            </a>{" "}
-            center.
+    <div className={styles.container}>
+      <div className={styles.wrapper}>
+        {/* Header */}
+        <div className={styles.header}>
+          <div className={styles.headerTitle}>
+            <FaBookOpen size={48} color="#2d2d2fff" />
+            Comic Builder
+          </div>
+          <p className={styles.headerSubtitle}>
+            Create amazing comic stories using Llama AI
           </p>
         </div>
-        <div className={styles.ctas}>
-          <a
-            className={styles.primary}
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className={styles.logo}
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={16}
-              height={16}
+
+        {/* Input Section */}
+        <div className={styles.inputSection}>
+          <div>
+            <label className={styles.label}>Story Prompt</label>
+            <textarea
+              value={prompt}
+              onChange={(e) => setPrompt(e.target.value)}
+              placeholder="e.g., A brave knight discovers a magical forest where animals can talk..."
+              className={styles.textarea}
+              rows="4"
             />
-            Deploy Now
-          </a>
-          <a
-            className={styles.secondary}
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
+          </div>
+          <div>
+            <label className={styles.label}>Number of Pages (1-5)</label>
+            <div className={styles.rangeWrapper}>
+              <input
+                type="range"
+                min="1"
+                max="5"
+                value={pages}
+                onChange={(e) => setPages(parseInt(e.target.value))}
+                className={styles.rangeInput}
+              />
+              <span className={styles.rangeValue}>{pages}</span>
+            </div>
+          </div>
+
+          {error && <div className={styles.error}>{error}</div>}
+
+          <button
+            onClick={generateComic}
+            disabled={loading}
+            className={styles.button}
           >
-            Documentation
-          </a>
+            {loading ? (
+              <>
+                <FaTruckLoading className="animate-spin" />
+                Generating Comic...
+              </>
+            ) : (
+              <>
+                <FaMagic />
+                Generate Comic
+              </>
+            )}
+          </button>
         </div>
-      </main>
+
+        {/* Comic Display */}
+        {comic && (
+          <div className={styles.comicDisplay}>
+            <h2 className={styles.comicTitle}>{comic.title}</h2>
+            <p className={styles.comicPages}>
+              {comic.pages?.length || 0} pages
+            </p>
+
+            {comic.pages?.map((page) => (
+              <div key={page.page} className={styles.pageCard}>
+                <div className={styles.pageHeader}>
+                  <span className={styles.pageNumber}>Page {page.page}</span>
+                </div>
+
+                <p className={styles.sceneDescription}>{page.scene}</p>
+
+                <div className={styles.panelsGrid}>
+                  {page.panels?.map((panel) => (
+                    <div key={panel.panel} className={styles.panelCard}>
+                      <div className={styles.panelNumber}>
+                        Panel {panel.panel}
+                      </div>
+                      <p className={styles.panelDescription}>
+                        {panel.description}
+                      </p>
+                      {panel.dialogue && (
+                        <div className={styles.dialogue}>
+                          <span className={styles.dialogueLabel}>Dialogue</span>
+                          <p className={styles.dialogueText}>
+                            "{panel.dialogue}"
+                          </p>
+                        </div>
+                      )}
+                    </div>
+                  ))}
+                </div>
+              </div>
+            ))}
+          </div>
+        )}
+      </div>
     </div>
   );
 }
